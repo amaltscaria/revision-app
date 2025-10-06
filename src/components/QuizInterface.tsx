@@ -111,8 +111,10 @@ export default function QuizInterface({ pdfId }: QuizInterfaceProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Quiz Generator</CardTitle>
-          <CardDescription>Select a specific PDF to generate a quiz</CardDescription>
+          <CardTitle className="text-2xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+            🎯 Quiz Generator
+          </CardTitle>
+          <CardDescription className="text-base">Select a specific PDF to generate a quiz</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -122,8 +124,10 @@ export default function QuizInterface({ pdfId }: QuizInterfaceProps) {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Quiz Generator</CardTitle>
-          <CardDescription>AI-powered questions from your coursebook</CardDescription>
+          <CardTitle className="text-2xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+            🎯 Quiz Generator
+          </CardTitle>
+          <CardDescription className="text-base">AI-powered questions from your coursebook</CardDescription>
         </CardHeader>
         <CardContent>
           <Button onClick={generateQuiz} disabled={isLoading} className="w-full">

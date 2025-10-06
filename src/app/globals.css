@@ -4,26 +4,26 @@
 
 @layer base {
   :root {
-    --background: 220 17% 97%;
+    --background: 0 0% 100%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 221 83% 53%;
+    --primary: 262 83% 58%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 60% 50%;
+    --secondary: 217 91% 60%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 220 14% 90%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
     --accent: 217 91% 60%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 13% 87%;
-    --input: 220 13% 91%;
-    --ring: 221 83% 53%;
-    --radius: 0.75rem;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 262 83% 58%;
+    --radius: 1rem;
   }
 }
 
@@ -32,28 +32,48 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 text-foreground min-h-screen;
+    background-attachment: fixed;
   }
 }
 
 @layer components {
-  /* Enhanced card styling */
+  /* Enhanced card styling with glassmorphism */
   [data-slot="card"] {
-    @apply shadow-lg transition-shadow hover:shadow-xl;
+    @apply shadow-2xl transition-all duration-300 hover:shadow-purple-200 hover:scale-[1.02] border-2 backdrop-blur-sm bg-white/90;
   }
 
-  /* Enhanced header */
+  /* Beautiful gradient header */
   header {
-    @apply bg-gradient-to-r from-primary/5 to-accent/5 backdrop-blur-sm;
+    @apply bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 text-white shadow-2xl;
   }
 
-  /* Tabs enhancement */
+  /* Tabs enhancement with gradient */
   [data-slot="tabs-list"] {
-    @apply shadow-md;
+    @apply shadow-lg bg-gradient-to-r from-purple-100 to-blue-100 p-1;
   }
 
-  /* Button enhancements */
+  [data-slot="tabs-trigger"] {
+    @apply transition-all duration-300;
+  }
+
+  [data-slot="tabs-trigger"][data-state="active"] {
+    @apply bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-md;
+  }
+
+  /* Button enhancements with gradients */
   [data-slot="button"] {
-    @apply shadow-sm transition-all duration-200;
+    @apply shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl;
+  }
+
+  /* Primary button gradient */
+  button[class*="bg-primary"] {
+    @apply bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700;
+  }
+
+  /* Select and input enhancements */
+  [data-slot="select-trigger"],
+  input {
+    @apply shadow-md transition-all duration-200 hover:shadow-lg focus:shadow-purple-200;
   }
 }

@@ -12,11 +12,13 @@ export default function PDFViewer({ url }: PDFViewerProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>PDF Viewer</CardTitle>
+          <CardTitle className="text-2xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+            📚 PDF Viewer
+          </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center h-96">
-          <FileText className="h-16 w-16 text-muted-foreground mb-4" />
-          <p className="text-muted-foreground">Select a PDF to view</p>
+          <FileText className="h-16 w-16 text-purple-400 mb-4" />
+          <p className="text-muted-foreground text-lg">Select a PDF to view</p>
         </CardContent>
       </Card>
     );
@@ -25,7 +27,9 @@ export default function PDFViewer({ url }: PDFViewerProps) {
   return (
     <Card className="h-full">
       <CardHeader>
-        <CardTitle>PDF Viewer</CardTitle>
+        <CardTitle className="text-2xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+          📚 PDF Viewer
+        </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
         <iframe

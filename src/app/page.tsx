@@ -18,11 +18,13 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b shadow-md">
-        <div className="container mx-auto px-4 py-6">
-          <h1 className="text-4xl font-bold text-primary mb-2">Student Revision App</h1>
-          <p className="text-lg text-muted-foreground">AI-powered learning companion</p>
+    <div className="min-h-screen">
+      <header className="border-b-0">
+        <div className="container mx-auto px-4 py-8">
+          <h1 className="text-5xl font-extrabold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-purple-100 drop-shadow-lg">
+            Student Revision App
+          </h1>
+          <p className="text-xl text-blue-100 font-medium">✨ AI-powered learning companion for modern students</p>
         </div>
       </header>
 
