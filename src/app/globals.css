@@ -4,26 +4,26 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --background: 220 17% 97%;
+    --foreground: 222 47% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 250 70% 50%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 250 10% 90%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 200 10% 95%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 250 70% 50%;
-    --radius: 0.5rem;
+    --popover-foreground: 222 47% 11%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 60% 50%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 220 14% 90%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 87%;
+    --input: 220 13% 91%;
+    --ring: 221 83% 53%;
+    --radius: 0.75rem;
   }
 }
 
@@ -33,5 +33,27 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* Enhanced card styling */
+  [data-slot="card"] {
+    @apply shadow-lg transition-shadow hover:shadow-xl;
+  }
+
+  /* Enhanced header */
+  header {
+    @apply bg-gradient-to-r from-primary/5 to-accent/5 backdrop-blur-sm;
+  }
+
+  /* Tabs enhancement */
+  [data-slot="tabs-list"] {
+    @apply shadow-md;
+  }
+
+  /* Button enhancements */
+  [data-slot="button"] {
+    @apply shadow-sm transition-all duration-200;
   }
 }
