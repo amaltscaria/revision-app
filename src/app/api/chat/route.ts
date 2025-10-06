@@ -31,14 +31,14 @@ export async function POST(request: NextRequest) {
 
         // For citations, we'll extract relevant snippets (simplified version)
         // In production, you'd use vector embeddings and semantic search
-        const lines = pdf.extractedText.split('\n').filter(line => line.trim());
-        const relevantLines = lines.filter(line =>
-          message.toLowerCase().split(' ').some(word =>
+        const lines = pdf.extractedText.split('\n').filter((line: string) => line.trim());
+        const relevantLines = lines.filter((line: string) =>
+          message.toLowerCase().split(' ').some((word: string) =>
             word.length > 3 && line.toLowerCase().includes(word)
           )
         ).slice(0, 3);
 
-        citations = relevantLines.map((snippet, i) => ({
+        citations = relevantLines.map((snippet: string) => ({
           pageNumber: Math.floor(Math.random() * (pdf.pageCount || 10)) + 1,
           snippet: snippet.substring(0, 150),
         }));

@@ -27,21 +27,21 @@ export async function GET(request: NextRequest) {
     const weaknessesMap: { [key: string]: number } = {};
 
     attempts.forEach((attempt) => {
-      attempt.strengths.forEach((strength) => {
+      attempt.strengths.forEach((strength: string) => {
         strengthsMap[strength] = (strengthsMap[strength] || 0) + 1;
       });
-      attempt.weaknesses.forEach((weakness) => {
+      attempt.weaknesses.forEach((weakness: string) => {
         weaknessesMap[weakness] = (weaknessesMap[weakness] || 0) + 1;
       });
     });
 
     const topStrengths = Object.entries(strengthsMap)
-      .sort(([, a], [, b]) => b - a)
+      .sort(([, a], [, b]) => (b as number) - (a as number))
       .slice(0, 5)
       .map(([topic]) => topic);
 
     const topWeaknesses = Object.entries(weaknessesMap)
-      .sort(([, a], [, b]) => b - a)
+      .sort(([, a], [, b]) => (b as number) - (a as number))
       .slice(0, 5)
       .map(([topic]) => topic);
 
