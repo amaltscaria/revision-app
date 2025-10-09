@@ -35,13 +35,15 @@ export default function Home() {
         </div>
 
         <Tabs defaultValue="quiz" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 lg:w-auto">
-            <TabsTrigger value="quiz">Quiz</TabsTrigger>
-            <TabsTrigger value="pdf">PDF Viewer</TabsTrigger>
-            <TabsTrigger value="progress">Progress</TabsTrigger>
-            <TabsTrigger value="chat">Chat</TabsTrigger>
-            <TabsTrigger value="videos">Videos</TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto">
+            <TabsList className="inline-flex w-auto min-w-full lg:grid lg:w-full lg:grid-cols-5">
+              <TabsTrigger value="quiz" className="flex-shrink-0">Quiz</TabsTrigger>
+              <TabsTrigger value="pdf" className="flex-shrink-0 whitespace-nowrap">PDF Viewer</TabsTrigger>
+              <TabsTrigger value="progress" className="flex-shrink-0">Progress</TabsTrigger>
+              <TabsTrigger value="chat" className="flex-shrink-0">Chat</TabsTrigger>
+              <TabsTrigger value="videos" className="flex-shrink-0">Videos</TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="quiz" className="mt-6">
             <div className="grid lg:grid-cols-2 gap-6">
