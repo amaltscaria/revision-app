@@ -20,46 +20,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    // Convert file to buffer
+    // Convert file to buffer and base64
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
+    const base64Data = buffer.toString('base64');
 
     // For now, skip PDF text extraction (can be added later with proper server-side PDF parsing)
     const extractedText = `Sample content from ${file.name}. This would contain the actual PDF text in production.`;
     const pageCount = 1;
 
-    // Upload to Cloudinary with proper configuration for PDFs
-    const uploadResult = await new Promise((resolve, reject) => {
-      cloudinary.uploader.upload_stream(
-        {
-          resource_type: 'auto',
-          folder: 'pdfs',
-          public_id: `pdf_${Date.now()}`,
-          access_mode: 'public',
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      ).end(buffer);
-    });
+    // Create data URL for PDF
+    const pdfDataUrl = `data:application/pdf;base64,${base64Data}`;
 
-    const cloudinaryResult = uploadResult as any;
-
-    // Generate a signed URL for PDF access (bypasses authentication issues)
-    const signedUrl = cloudinary.url(cloudinaryResult.public_id, {
-      resource_type: 'image',
-      type: 'upload',
-      sign_url: true,
-      secure: true,
-    });
-
-    // Save to database
+    // Save to database with base64 data
     const pdfDoc = await PDF.create({
       title: file.name.replace('.pdf', ''),
       filename: file.name,
-      url: signedUrl || cloudinaryResult.secure_url,
-      cloudinaryId: cloudinaryResult.public_id,
+      url: pdfDataUrl,
+      pdfData: base64Data,
       pageCount,
       extractedText,
       isSeeded: false,

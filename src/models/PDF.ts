@@ -4,7 +4,8 @@ export interface IPDF extends Document {
   title: string;
   filename: string;
   url: string;
-  cloudinaryId: string;
+  cloudinaryId?: string;
+  pdfData?: string;
   pageCount: number;
   extractedText: string;
   isSeeded: boolean;
@@ -28,7 +29,11 @@ const PDFSchema = new Schema<IPDF>(
     },
     cloudinaryId: {
       type: String,
-      required: true,
+      required: false,
+    },
+    pdfData: {
+      type: String,
+      required: false,
     },
     pageCount: {
       type: Number,
