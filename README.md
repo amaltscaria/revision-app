@@ -80,8 +80,7 @@ A fully functional, responsive web application that helps school students revise
 - **Context-based retrieval** - PDF content integration
 
 ### Cloud Services
-- **Cloudinary** - PDF file storage
-- **MongoDB Atlas** - Database hosting
+- **MongoDB Atlas** - Database hosting (stores PDF base64 data)
 - **Vercel** - Deployment platform
 
 ## 📦 Installation & Setup
@@ -90,7 +89,6 @@ A fully functional, responsive web application that helps school students revise
 - Node.js 18+ and npm
 - MongoDB Atlas account
 - OpenAI API key
-- Cloudinary account
 
 ### Environment Variables
 
@@ -102,14 +100,6 @@ MONGODB_URI=your_mongodb_connection_string
 
 # OpenAI
 OPENAI_API_KEY=your_openai_api_key
-
-# Cloudinary
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_cloudinary_api_key
-CLOUDINARY_API_SECRET=your_cloudinary_api_secret
-
-# App URL
-NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
 ### Installation Steps
@@ -235,19 +225,16 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 - ✅ Responsive design (mobile & desktop)
 - ✅ Clean UI/UX with Shadcn components
 
-### Partially Implemented
-- ⚠️ PDF text extraction (placeholder - needs pdf-parse fix)
-- ⚠️ NCERT PDF seeding (manual upload works)
+### Fully Tested
+- ✅ Real PDF text extraction with pdf-parse
+- ✅ NCERT PDF seeding completed
+- ✅ Custom error dialogs (no browser alerts)
+- ✅ Visual feedback for selected PDFs
 
 ## 🔧 What's Missing / Future Improvements
 
 ### Technical Debt
-1. **PDF Text Extraction**
-   - Currently using placeholder text
-   - Need to implement server-side PDF parsing
-   - Consider using pdf-parse or pdfjs in Node.js environment
-
-2. **Vector Embeddings for RAG**
+1. **Vector Embeddings for RAG**
    - Current implementation uses simple keyword matching
    - Should implement:
      - MongoDB Atlas Vector Search
