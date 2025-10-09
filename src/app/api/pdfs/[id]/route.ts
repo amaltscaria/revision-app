@@ -4,12 +4,13 @@ import PDF from '@/models/PDF';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
 
-    const pdf = await PDF.findById(params.id);
+    const { id } = await params;
+    const pdf = await PDF.findById(id);
 
     if (!pdf) {
       return NextResponse.json(

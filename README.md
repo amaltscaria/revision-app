@@ -40,25 +40,28 @@ A fully functional, responsive web application that helps school students revise
    - Performance visualization with progress bars
    - Topic-wise analysis (70%+ = strength, <50% = weakness)
 
-### B. Nice-to-Have Features ✅
+### B. Nice-to-Have Features (2/3 Implemented)
 
-1. **Chat UI (ChatGPT-inspired)**
+1. **Chat UI (ChatGPT-inspired)** ✅
    - Clean, responsive chat interface with left sidebar
    - Desktop sidebar and mobile drawer for chat history
    - Create new chats and switch between sessions
    - Auto-generated chat titles from first message
    - Left-aligned assistant messages, right-aligned user messages
+   - Auto-scroll to latest messages
+   - Auto-select PDF when switching chats
    - **Note**: Chat sessions stored in browser localStorage (not synced across devices)
 
-2. **RAG Answers with Citations**
+2. **RAG Answers with Citations** ✅
    - Context-aware responses from PDF content
    - Citations with page numbers and quoted snippets
    - Simplified semantic search for relevant content
 
-3. **YouTube Videos Recommender**
-   - AI-extracted topics from PDFs
-   - Educational video search links
-   - Topic-based learning resources
+3. **YouTube Videos Recommender** ⚠️ (Backend Only)
+   - ✅ Backend API implemented at `/api/youtube/route.ts`
+   - ✅ AI-extracts topics from PDFs using GPT-4o-mini
+   - ✅ Generates YouTube search links
+   - ❌ Frontend UI not implemented (no tab/component to use the feature)
 
 ## 🛠️ Tech Stack
 
@@ -220,9 +223,9 @@ OPENAI_API_KEY=your_openai_api_key
 - ✅ Quiz submission and scoring
 - ✅ Progress tracking dashboard
 - ✅ Strengths/weaknesses analysis
-- ✅ ChatGPT-inspired chat UI
+- ✅ ChatGPT-inspired chat UI (fully functional)
 - ✅ RAG with citations (simplified)
-- ✅ YouTube video recommendations
+- ⚠️ YouTube video recommendations (backend only, no UI)
 - ✅ Responsive design (mobile & desktop)
 - ✅ Clean UI/UX with Shadcn components
 
