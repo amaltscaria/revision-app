@@ -175,12 +175,12 @@ export default function ChatInterface({ pdfId }: ChatInterfaceProps) {
                   <button
                     key={session.id}
                     onClick={() => handleSelectChat(session.id)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-accent transition-colors ${
-                      currentSessionId === session.id ? 'bg-accent' : ''
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-accent/50 transition-colors ${
+                      currentSessionId === session.id ? 'bg-accent/80 font-semibold' : ''
                     }`}
                   >
-                    <div className="font-medium truncate">{session.title}</div>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="font-medium truncate text-foreground">{session.title}</div>
+                    <div className="text-xs text-muted-foreground mt-1">
                       {session.messages.length} messages
                     </div>
                   </button>
@@ -217,12 +217,12 @@ export default function ChatInterface({ pdfId }: ChatInterfaceProps) {
                   <button
                     key={session.id}
                     onClick={() => handleSelectChat(session.id)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-accent transition-colors ${
-                      currentSessionId === session.id ? 'bg-accent' : ''
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-accent/50 transition-colors ${
+                      currentSessionId === session.id ? 'bg-accent/80 font-semibold' : ''
                     }`}
                   >
-                    <div className="font-medium truncate">{session.title}</div>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="font-medium truncate text-foreground">{session.title}</div>
+                    <div className="text-xs text-muted-foreground mt-1">
                       {session.messages.length} messages
                     </div>
                   </button>
@@ -260,13 +260,13 @@ export default function ChatInterface({ pdfId }: ChatInterfaceProps) {
                     }`}
                   >
                     <div
-                      className={`max-w-[80%] p-4 rounded-lg ${
+                      className={`max-w-[80%] p-4 rounded-lg break-words ${
                         message.role === 'user'
                           ? 'bg-primary text-primary-foreground'
                           : 'bg-muted'
                       }`}
                     >
-                      <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                      <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
                       {message.citations && message.citations.length > 0 && (
                         <div className="mt-3 pt-3 border-t border-border/50">
                           <p className="text-xs font-medium mb-2">Sources:</p>
@@ -291,16 +291,17 @@ export default function ChatInterface({ pdfId }: ChatInterfaceProps) {
               </div>
             )}
           </ScrollArea>
-          <div className="p-4 border-t">
-            <div className="flex gap-2">
+          <div className="p-4 border-t bg-background">
+            <div className="flex gap-2 items-center max-w-full">
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSend()}
                 placeholder="Ask a question..."
                 disabled={isLoading || !pdfId || pdfId === 'all'}
+                className="flex-1"
               />
-              <Button onClick={handleSend} disabled={isLoading || !input.trim()}>
+              <Button onClick={handleSend} disabled={isLoading || !input.trim()} className="flex-shrink-0">
                 <Send className="h-4 w-4" />
               </Button>
             </div>

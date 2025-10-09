@@ -43,16 +43,17 @@ A fully functional, responsive web application that helps school students revise
 ### B. Nice-to-Have Features ✅
 
 1. **Chat UI (ChatGPT-inspired)**
-   - Clean, responsive chat interface
+   - Clean, responsive chat interface with left sidebar
+   - Desktop sidebar and mobile drawer for chat history
+   - Create new chats and switch between sessions
+   - Auto-generated chat titles from first message
    - Left-aligned assistant messages, right-aligned user messages
-   - Message history support
-   - Mobile responsive design
+   - **Note**: Chat sessions stored in browser localStorage (not synced across devices)
 
 2. **RAG Answers with Citations**
    - Context-aware responses from PDF content
    - Citations with page numbers and quoted snippets
    - Simplified semantic search for relevant content
-   - Chat history stored in MongoDB
 
 3. **YouTube Videos Recommender**
    - AI-extracted topics from PDFs
@@ -240,6 +241,11 @@ OPENAI_API_KEY=your_openai_api_key
      - MongoDB Atlas Vector Search
      - OpenAI embeddings
      - Semantic similarity search
+
+2. **Chat Session Persistence**
+   - Chat sessions currently stored in browser localStorage only
+   - Not synced across devices or persisted in database
+   - Future: Store in MongoDB with user authentication
 
 3. **Authentication**
    - No user authentication system
