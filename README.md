@@ -4,7 +4,7 @@ A fully functional, responsive web application that helps school students revise
 
 ## 🚀 Live Demo
 
-[Live URL will be added after deployment]
+**Live Application:** https://revision-app-drab.vercel.app/
 
 ## ✨ Features Implemented
 
