@@ -156,15 +156,15 @@ export default function ChatInterface({ pdfId }: ChatInterfaceProps) {
   return (
     <div className="flex h-[calc(100vh-200px)] gap-4">
       {/* Desktop Sidebar */}
-      <Card className="hidden md:block w-64 flex-shrink-0">
-        <CardHeader className="pb-3">
+      <Card className="hidden md:flex md:flex-col w-64 flex-shrink-0 overflow-hidden">
+        <CardHeader className="pb-3 flex-shrink-0">
           <Button onClick={handleNewChat} className="w-full">
             <Plus className="h-4 w-4 mr-2" />
             New Chat
           </Button>
         </CardHeader>
-        <CardContent className="p-0">
-          <ScrollArea className="h-[calc(100vh-300px)]">
+        <CardContent className="p-0 flex-1 overflow-hidden">
+          <ScrollArea className="h-full">
             <div className="space-y-1 p-2">
               {sessions.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-4">
@@ -176,11 +176,13 @@ export default function ChatInterface({ pdfId }: ChatInterfaceProps) {
                     key={session.id}
                     onClick={() => handleSelectChat(session.id)}
                     className={`w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-accent/50 transition-colors ${
-                      currentSessionId === session.id ? 'bg-accent/80 font-semibold' : ''
+                      currentSessionId === session.id ? 'bg-accent font-semibold' : ''
                     }`}
                   >
                     <div className="font-medium truncate text-foreground">{session.title}</div>
-                    <div className="text-xs text-muted-foreground mt-1">
+                    <div className={`text-xs mt-1 ${
+                      currentSessionId === session.id ? 'text-foreground/70' : 'text-muted-foreground'
+                    }`}>
                       {session.messages.length} messages
                     </div>
                   </button>
@@ -218,11 +220,13 @@ export default function ChatInterface({ pdfId }: ChatInterfaceProps) {
                     key={session.id}
                     onClick={() => handleSelectChat(session.id)}
                     className={`w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-accent/50 transition-colors ${
-                      currentSessionId === session.id ? 'bg-accent/80 font-semibold' : ''
+                      currentSessionId === session.id ? 'bg-accent font-semibold' : ''
                     }`}
                   >
                     <div className="font-medium truncate text-foreground">{session.title}</div>
-                    <div className="text-xs text-muted-foreground mt-1">
+                    <div className={`text-xs mt-1 ${
+                      currentSessionId === session.id ? 'text-foreground/70' : 'text-muted-foreground'
+                    }`}>
                       {session.messages.length} messages
                     </div>
                   </button>
@@ -234,8 +238,8 @@ export default function ChatInterface({ pdfId }: ChatInterfaceProps) {
       </Sheet>
 
       {/* Main Chat Area */}
-      <Card className="flex-1 flex flex-col">
-        <CardHeader>
+      <Card className="flex-1 flex flex-col overflow-hidden">
+        <CardHeader className="flex-shrink-0">
           <CardTitle>AI Tutor Chat</CardTitle>
           <CardDescription>
             {pdfId && pdfId !== 'all'
@@ -243,8 +247,8 @@ export default function ChatInterface({ pdfId }: ChatInterfaceProps) {
               : 'Select a PDF to get started'}
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 flex flex-col p-0">
-          <ScrollArea className="flex-1 px-6">
+        <CardContent className="flex-1 flex flex-col p-0 min-h-0">
+          <ScrollArea className="flex-1 px-6 overflow-auto">
             {messages.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
                 <MessageSquare className="h-16 w-16 mb-4" />
@@ -271,7 +275,7 @@ export default function ChatInterface({ pdfId }: ChatInterfaceProps) {
                         <div className="mt-3 pt-3 border-t border-border/50">
                           <p className="text-xs font-medium mb-2">Sources:</p>
                           {message.citations.map((citation, i) => (
-                            <div key={i} className="text-xs mb-1">
+                            <div key={i} className="text-xs mb-1 break-words">
                               <span className="font-medium">Page {citation.pageNumber}:</span>{' '}
                               "{citation.snippet}"
                             </div>
@@ -291,7 +295,7 @@ export default function ChatInterface({ pdfId }: ChatInterfaceProps) {
               </div>
             )}
           </ScrollArea>
-          <div className="p-4 border-t bg-background">
+          <div className="p-4 border-t bg-background flex-shrink-0">
             <div className="flex gap-2 items-center max-w-full">
               <Input
                 value={input}

@@ -23,8 +23,9 @@ export async function POST(request: NextRequest) {
 
     // If PDF is selected, get context from it
     if (pdfId && pdfId !== 'all') {
-      const pdf = await PDF.findById(pdfId);
-      if (pdf) {
+      try {
+        const pdf = await PDF.findById(pdfId);
+        if (pdf) {
         // Use a portion of the PDF text as context (limit to avoid token limits)
         const contextLimit = 10000;
         context = pdf.extractedText.substring(0, contextLimit);
@@ -42,6 +43,10 @@ export async function POST(request: NextRequest) {
           pageNumber: Math.floor(Math.random() * (pdf.pageCount || 10)) + 1,
           snippet: snippet.substring(0, 150),
         }));
+        }
+      } catch (err) {
+        console.error('Error fetching PDF:', err);
+        // Continue without context if PDF fetch fails
       }
     } else if (pdfId === 'all') {
       // Get all PDFs
