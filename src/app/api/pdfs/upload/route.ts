@@ -29,19 +29,20 @@ export async function POST(request: NextRequest) {
     const extractedText = `Sample content from ${file.name}. This would contain the actual PDF text in production.`;
     const pageCount = 1;
 
-    // Create data URL for PDF
-    const pdfDataUrl = `data:application/pdf;base64,${base64Data}`;
-
     // Save to database with base64 data
     const pdfDoc = await PDF.create({
       title: file.name.replace('.pdf', ''),
       filename: file.name,
-      url: pdfDataUrl,
+      url: '', // Will be set after we get the ID
       pdfData: base64Data,
       pageCount,
       extractedText,
       isSeeded: false,
     });
+
+    // Update with proper viewing URL
+    pdfDoc.url = `/api/pdfs/${pdfDoc._id}/view`;
+    await pdfDoc.save();
 
     return NextResponse.json({
       success: true,
