@@ -40,7 +40,7 @@ A fully functional, responsive web application that helps school students revise
    - Performance visualization with progress bars
    - Topic-wise analysis (70%+ = strength, <50% = weakness)
 
-### B. Nice-to-Have Features (2/3 Implemented)
+### B. Nice-to-Have Features ✅
 
 1. **Chat UI (ChatGPT-inspired)** ✅
    - Clean, responsive chat interface with left sidebar
@@ -57,11 +57,11 @@ A fully functional, responsive web application that helps school students revise
    - Citations with page numbers and quoted snippets
    - Simplified semantic search for relevant content
 
-3. **YouTube Videos Recommender** ⚠️ (Backend Only)
-   - ✅ Backend API implemented at `/api/youtube/route.ts`
-   - ✅ AI-extracts topics from PDFs using GPT-4o-mini
-   - ✅ Generates YouTube search links
-   - ❌ Frontend UI not implemented (no tab/component to use the feature)
+3. **YouTube Videos Recommender** ✅
+   - AI-extracts topics from PDFs using GPT-4o-mini
+   - Generates YouTube search links for educational videos
+   - Clean card-based UI with topic display
+   - Direct links to YouTube search results
 
 ## 🛠️ Tech Stack
 
@@ -225,7 +225,7 @@ OPENAI_API_KEY=your_openai_api_key
 - ✅ Strengths/weaknesses analysis
 - ✅ ChatGPT-inspired chat UI (fully functional)
 - ✅ RAG with citations (simplified)
-- ⚠️ YouTube video recommendations (backend only, no UI)
+- ✅ YouTube video recommendations (fully functional)
 - ✅ Responsive design (mobile & desktop)
 - ✅ Clean UI/UX with Shadcn components
 

@@ -7,6 +7,7 @@ import PDFViewer from '@/components/PDFViewer';
 import QuizInterface from '@/components/QuizInterface';
 import ProgressDashboard from '@/components/ProgressDashboard';
 import ChatInterface from '@/components/ChatInterface';
+import YouTubeRecommender from '@/components/YouTubeRecommender';
 
 export default function Home() {
   const [selectedPdfId, setSelectedPdfId] = useState<string | null>(null);
@@ -34,11 +35,12 @@ export default function Home() {
         </div>
 
         <Tabs defaultValue="quiz" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto">
+          <TabsList className="grid w-full grid-cols-5 lg:w-auto">
             <TabsTrigger value="quiz">Quiz</TabsTrigger>
             <TabsTrigger value="pdf">PDF Viewer</TabsTrigger>
             <TabsTrigger value="progress">Progress</TabsTrigger>
             <TabsTrigger value="chat">Chat</TabsTrigger>
+            <TabsTrigger value="videos">Videos</TabsTrigger>
           </TabsList>
 
           <TabsContent value="quiz" className="mt-6">
@@ -64,6 +66,17 @@ export default function Home() {
             <div className="grid lg:grid-cols-2 gap-6">
               <div>
                 <ChatInterface pdfId={selectedPdfId} onPdfChange={handlePdfSelect} />
+              </div>
+              <div className="hidden lg:block">
+                <PDFViewer url={pdfUrl} />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="videos" className="mt-6">
+            <div className="grid lg:grid-cols-2 gap-6">
+              <div>
+                <YouTubeRecommender pdfId={selectedPdfId} />
               </div>
               <div className="hidden lg:block">
                 <PDFViewer url={pdfUrl} />
