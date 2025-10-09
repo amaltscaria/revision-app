@@ -46,11 +46,19 @@ export async function POST(request: NextRequest) {
 
     const cloudinaryResult = uploadResult as any;
 
+    // Generate a signed URL for PDF access (bypasses authentication issues)
+    const signedUrl = cloudinary.url(cloudinaryResult.public_id, {
+      resource_type: 'image',
+      type: 'upload',
+      sign_url: true,
+      secure: true,
+    });
+
     // Save to database
     const pdfDoc = await PDF.create({
       title: file.name.replace('.pdf', ''),
       filename: file.name,
-      url: cloudinaryResult.secure_url,
+      url: signedUrl || cloudinaryResult.secure_url,
       cloudinaryId: cloudinaryResult.public_id,
       pageCount,
       extractedText,
