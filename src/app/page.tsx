@@ -63,7 +63,7 @@ export default function Home() {
           <TabsContent value="chat" className="mt-6">
             <div className="grid lg:grid-cols-2 gap-6">
               <div>
-                <ChatInterface pdfId={selectedPdfId} />
+                <ChatInterface pdfId={selectedPdfId} onPdfChange={handlePdfSelect} />
               </div>
               <div className="hidden lg:block">
                 <PDFViewer url={pdfUrl} />

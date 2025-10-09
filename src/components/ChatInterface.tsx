@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -24,15 +24,17 @@ interface ChatSession {
 
 interface ChatInterfaceProps {
   pdfId: string | null;
+  onPdfChange?: (pdfId: string, url: string) => void;
 }
 
-export default function ChatInterface({ pdfId }: ChatInterfaceProps) {
+export default function ChatInterface({ pdfId, onPdfChange }: ChatInterfaceProps) {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Load sessions from localStorage on mount
   useEffect(() => {
@@ -69,12 +71,25 @@ export default function ChatInterface({ pdfId }: ChatInterfaceProps) {
   };
 
   // Switch to a different chat
-  const handleSelectChat = (sessionId: string) => {
+  const handleSelectChat = async (sessionId: string) => {
     const session = sessions.find((s) => s.id === sessionId);
     if (session) {
       setCurrentSessionId(sessionId);
       setMessages(session.messages);
       setIsDrawerOpen(false);
+
+      // Auto-select PDF if session has one
+      if (session.pdfId && session.pdfId !== 'all' && onPdfChange) {
+        try {
+          const res = await fetch(`/api/pdfs/${session.pdfId}`);
+          const data = await res.json();
+          if (data.success && data.pdf) {
+            onPdfChange(data.pdf._id, data.pdf.url);
+          }
+        } catch (error) {
+          console.error('Failed to fetch PDF:', error);
+        }
+      }
     }
   };
 
@@ -86,6 +101,11 @@ export default function ChatInterface({ pdfId }: ChatInterfaceProps) {
       )
     );
   };
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   // Update current session messages
   useEffect(() => {
@@ -175,13 +195,19 @@ export default function ChatInterface({ pdfId }: ChatInterfaceProps) {
                   <button
                     key={session.id}
                     onClick={() => handleSelectChat(session.id)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-accent/50 transition-colors ${
-                      currentSessionId === session.id ? 'bg-accent font-semibold' : ''
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm border transition-colors ${
+                      currentSessionId === session.id
+                        ? 'bg-primary border-primary font-semibold'
+                        : 'bg-muted/30 border-border/50 hover:bg-muted/60'
                     }`}
                   >
-                    <div className="font-medium truncate text-foreground">{session.title}</div>
+                    <div className={`font-medium truncate ${
+                      currentSessionId === session.id ? 'text-primary-foreground' : 'text-foreground'
+                    }`}>
+                      {session.title}
+                    </div>
                     <div className={`text-xs mt-1 ${
-                      currentSessionId === session.id ? 'text-foreground/70' : 'text-muted-foreground'
+                      currentSessionId === session.id ? 'text-primary-foreground/80' : 'text-muted-foreground'
                     }`}>
                       {session.messages.length} messages
                     </div>
@@ -219,13 +245,19 @@ export default function ChatInterface({ pdfId }: ChatInterfaceProps) {
                   <button
                     key={session.id}
                     onClick={() => handleSelectChat(session.id)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-accent/50 transition-colors ${
-                      currentSessionId === session.id ? 'bg-accent font-semibold' : ''
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm border transition-colors ${
+                      currentSessionId === session.id
+                        ? 'bg-primary border-primary font-semibold'
+                        : 'bg-muted/30 border-border/50 hover:bg-muted/60'
                     }`}
                   >
-                    <div className="font-medium truncate text-foreground">{session.title}</div>
+                    <div className={`font-medium truncate ${
+                      currentSessionId === session.id ? 'text-primary-foreground' : 'text-foreground'
+                    }`}>
+                      {session.title}
+                    </div>
                     <div className={`text-xs mt-1 ${
-                      currentSessionId === session.id ? 'text-foreground/70' : 'text-muted-foreground'
+                      currentSessionId === session.id ? 'text-primary-foreground/80' : 'text-muted-foreground'
                     }`}>
                       {session.messages.length} messages
                     </div>
@@ -252,7 +284,14 @@ export default function ChatInterface({ pdfId }: ChatInterfaceProps) {
             {messages.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
                 <MessageSquare className="h-16 w-16 mb-4" />
-                <p>Start a conversation with your AI tutor</p>
+                {!pdfId || pdfId === 'all' ? (
+                  <div className="text-center">
+                    <p className="text-lg font-medium">Please select a PDF to start chatting</p>
+                    <p className="text-sm mt-2">Choose a PDF from the dropdown above to ask questions</p>
+                  </div>
+                ) : (
+                  <p>Start a conversation with your AI tutor</p>
+                )}
               </div>
             ) : (
               <div className="space-y-4 py-4">
@@ -292,23 +331,30 @@ export default function ChatInterface({ pdfId }: ChatInterfaceProps) {
                     </div>
                   </div>
                 )}
+                <div ref={messagesEndRef} />
               </div>
             )}
           </ScrollArea>
           <div className="p-4 border-t bg-background flex-shrink-0">
-            <div className="flex gap-2 items-center max-w-full">
-              <Input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSend()}
-                placeholder="Ask a question..."
-                disabled={isLoading || !pdfId || pdfId === 'all'}
-                className="flex-1"
-              />
-              <Button onClick={handleSend} disabled={isLoading || !input.trim()} className="flex-shrink-0">
-                <Send className="h-4 w-4" />
-              </Button>
-            </div>
+            {!pdfId || pdfId === 'all' ? (
+              <div className="text-center py-2 text-sm text-muted-foreground">
+                Please select a PDF from the dropdown above to start chatting
+              </div>
+            ) : (
+              <div className="flex gap-2 items-center max-w-full">
+                <Input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSend()}
+                  placeholder="Ask a question..."
+                  disabled={isLoading}
+                  className="flex-1"
+                />
+                <Button onClick={handleSend} disabled={isLoading || !input.trim()} className="flex-shrink-0">
+                  <Send className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
