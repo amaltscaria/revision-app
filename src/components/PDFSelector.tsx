@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Upload, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 interface PDF {
   _id: string;
@@ -20,9 +21,15 @@ interface PDFSelectorProps {
 
 export default function PDFSelector({ onSelect }: PDFSelectorProps) {
   const [pdfs, setPdfs] = useState<PDF[]>([]);
-  const [selectedPdf, setSelectedPdf] = useState<string>('all');
+  const [selectedPdf, setSelectedPdf] = useState<string>('');
   const [isUploading, setIsUploading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [alertDialog, setAlertDialog] = useState<{ open: boolean; title: string; message: string }>({
+    open: false,
+    title: '',
+    message: '',
+  });
 
   useEffect(() => {
     fetchPDFs();
@@ -57,13 +64,26 @@ export default function PDFSelector({ onSelect }: PDFSelectorProps) {
       if (data.success) {
         await fetchPDFs();
         setIsOpen(false);
-        alert('PDF uploaded successfully!');
+        setSelectedFile(null);
+        setAlertDialog({
+          open: true,
+          title: 'Success',
+          message: 'PDF uploaded successfully!',
+        });
       } else {
-        alert('Upload failed: ' + data.error);
+        setAlertDialog({
+          open: true,
+          title: 'Upload Failed',
+          message: data.error || 'Upload failed',
+        });
       }
     } catch (error) {
       console.error('Upload error:', error);
-      alert('Upload failed');
+      setAlertDialog({
+        open: true,
+        title: 'Upload Failed',
+        message: 'An unexpected error occurred. Please try again.',
+      });
     } finally {
       setIsUploading(false);
     }
@@ -81,25 +101,33 @@ export default function PDFSelector({ onSelect }: PDFSelectorProps) {
     }
   };
 
-  return (
-    <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-      <div className="flex-1 w-full">
-        <Select value={selectedPdf} onValueChange={handleSelect}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select a PDF" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All PDFs</SelectItem>
-            {pdfs.map((pdf) => (
-              <SelectItem key={pdf._id} value={pdf._id}>
-                {pdf.title}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+  const getSelectedPdfName = () => {
+    if (!selectedPdf) return null;
+    if (selectedPdf === 'all') return 'All PDFs';
+    const pdf = pdfs.find(p => p._id === selectedPdf);
+    return pdf?.title;
+  };
 
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+        <div className="flex-1 w-full">
+          <Select value={selectedPdf} onValueChange={handleSelect}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a PDF" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All PDFs</SelectItem>
+              {pdfs.map((pdf) => (
+                <SelectItem key={pdf._id} value={pdf._id}>
+                  {pdf.title}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           <Button variant="outline" className="w-full sm:w-auto">
             <Upload className="mr-2 h-4 w-4" />
@@ -111,13 +139,40 @@ export default function PDFSelector({ onSelect }: PDFSelectorProps) {
             <DialogTitle>Upload PDF Coursebook</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleUpload} className="space-y-4">
-            <div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="pdf-file" className="cursor-pointer">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-primary hover:bg-accent transition-colors">
+                  <Upload className="mx-auto h-12 w-12 text-gray-400 mb-3" />
+                  {selectedFile ? (
+                    <>
+                      <p className="text-sm font-medium text-primary mb-1">
+                        {selectedFile.name}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        Click to choose a different file
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-sm font-medium text-gray-700 mb-1">
+                        Click to choose PDF file
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        or drag and drop
+                      </p>
+                    </>
+                  )}
+                </div>
+              </label>
               <Input
+                id="pdf-file"
                 type="file"
                 name="file"
                 accept="application/pdf"
                 required
                 disabled={isUploading}
+                className="hidden"
+                onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
               />
             </div>
             <Button type="submit" disabled={isUploading} className="w-full">
@@ -133,6 +188,31 @@ export default function PDFSelector({ onSelect }: PDFSelectorProps) {
           </form>
         </DialogContent>
       </Dialog>
+      </div>
+
+      {selectedPdf && (
+        <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-lg border border-primary/20">
+          <div className="h-2 w-2 bg-primary rounded-full animate-pulse"></div>
+          <span className="text-sm font-medium text-primary">
+            Selected: {getSelectedPdfName()}
+          </span>
+        </div>
+      )}
+
+      {/* Alert Dialog */}
+      <AlertDialog open={alertDialog.open} onOpenChange={(open) => setAlertDialog({ ...alertDialog, open })}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{alertDialog.title}</AlertDialogTitle>
+            <AlertDialogDescription>{alertDialog.message}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setAlertDialog({ ...alertDialog, open: false })}>
+              OK
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

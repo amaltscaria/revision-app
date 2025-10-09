@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { v2 as cloudinary } from 'cloudinary';
 import dbConnect from '@/lib/mongodb';
 import PDF from '@/models/PDF';
-
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import { pdf } from 'pdf-parse';
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,22 +19,31 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes);
     const base64Data = buffer.toString('base64');
 
-    // For now, skip PDF text extraction (can be added later with proper server-side PDF parsing)
-    const extractedText = `Sample content from ${file.name}. This would contain the actual PDF text in production.`;
-    const pageCount = 1;
+    // Extract text from PDF
+    let extractedText = '';
+    let pageCount = 1;
 
-    // Save to database with base64 data
+    try {
+      const data = await pdf(buffer);
+      extractedText = data.text;
+      pageCount = data.total;
+    } catch (error) {
+      console.error('PDF parsing error:', error);
+      extractedText = 'Unable to extract text from PDF';
+    }
+
+    // Save to database with base64 data (temp URL first)
     const pdfDoc = await PDF.create({
       title: file.name.replace('.pdf', ''),
       filename: file.name,
-      url: '', // Will be set after we get the ID
+      url: 'temp', // Temporary placeholder
       pdfData: base64Data,
       pageCount,
       extractedText,
       isSeeded: false,
     });
 
-    // Update with proper viewing URL
+    // Update with proper viewing URL using the generated ID
     pdfDoc.url = `/api/pdfs/${pdfDoc._id}/view`;
     await pdfDoc.save();
 

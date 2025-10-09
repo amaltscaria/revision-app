@@ -26,7 +26,7 @@ const AnswerSchema = new Schema<IAnswer>({
   },
   userAnswer: {
     type: String,
-    required: true,
+    default: '',
   },
   isCorrect: {
     type: Boolean,

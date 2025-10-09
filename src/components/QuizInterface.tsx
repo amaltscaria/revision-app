@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Loader2, RefreshCw, CheckCircle, XCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 interface Question {
   type: 'mcq' | 'saq' | 'laq';
@@ -35,10 +36,24 @@ export default function QuizInterface({ pdfId }: QuizInterfaceProps) {
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
   const [submitted, setSubmitted] = useState(false);
   const [result, setResult] = useState<any>(null);
+  const [errorDialog, setErrorDialog] = useState<{ open: boolean; title: string; message: string }>({
+    open: false,
+    title: '',
+    message: '',
+  });
+  const [confirmDialog, setConfirmDialog] = useState<{ open: boolean; message: string; onConfirm: () => void }>({
+    open: false,
+    message: '',
+    onConfirm: () => {},
+  });
 
   const generateQuiz = async () => {
-    if (!pdfId || pdfId === 'all') {
-      alert('Please select a specific PDF');
+    if (!pdfId) {
+      setErrorDialog({
+        open: true,
+        title: 'No PDF Selected',
+        message: 'Please select a PDF or "All PDFs" before generating a quiz.',
+      });
       return;
     }
 
@@ -63,11 +78,19 @@ export default function QuizInterface({ pdfId }: QuizInterfaceProps) {
       if (data.success) {
         setQuiz(data.quiz);
       } else {
-        alert('Failed to generate quiz: ' + data.error);
+        setErrorDialog({
+          open: true,
+          title: 'Quiz Generation Failed',
+          message: data.error || 'Failed to generate quiz',
+        });
       }
     } catch (error) {
       console.error('Quiz generation error:', error);
-      alert('Failed to generate quiz');
+      setErrorDialog({
+        open: true,
+        title: 'Quiz Generation Failed',
+        message: 'An unexpected error occurred. Please try again.',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -78,6 +101,23 @@ export default function QuizInterface({ pdfId }: QuizInterfaceProps) {
   };
 
   const handleSubmit = async () => {
+    if (!quiz) return;
+
+    // Check if all questions are answered
+    const unansweredCount = quiz.questions.length - Object.keys(answers).length;
+    if (unansweredCount > 0) {
+      setConfirmDialog({
+        open: true,
+        message: `You have ${unansweredCount} unanswered question(s). Unanswered questions will be marked as incorrect. Do you want to submit anyway?`,
+        onConfirm: () => submitQuizAnswers(),
+      });
+      return;
+    }
+
+    submitQuizAnswers();
+  };
+
+  const submitQuizAnswers = async () => {
     if (!quiz) return;
 
     const answerArray = quiz.questions.map((_, index) => ({
@@ -99,22 +139,30 @@ export default function QuizInterface({ pdfId }: QuizInterfaceProps) {
         setResult(data);
         setSubmitted(true);
       } else {
-        alert('Failed to submit quiz');
+        setErrorDialog({
+          open: true,
+          title: 'Submission Failed',
+          message: 'Failed to submit quiz. Please try again.',
+        });
       }
     } catch (error) {
       console.error('Quiz submission error:', error);
-      alert('Failed to submit quiz');
+      setErrorDialog({
+        open: true,
+        title: 'Submission Failed',
+        message: 'An unexpected error occurred. Please try again.',
+      });
     }
   };
 
-  if (!pdfId || pdfId === 'all') {
+  if (!pdfId) {
     return (
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
             🎯 Quiz Generator
           </CardTitle>
-          <CardDescription className="text-base">Select a specific PDF to generate a quiz</CardDescription>
+          <CardDescription className="text-base">Select a PDF (or "All PDFs") to generate a quiz</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -217,7 +265,7 @@ export default function QuizInterface({ pdfId }: QuizInterfaceProps) {
 
                   {question.type === 'mcq' && question.options ? (
                     <RadioGroup
-                      value={answers[index]}
+                      value={answers[index] || ''}
                       onValueChange={(value) => handleAnswerChange(index, value)}
                       disabled={submitted}
                     >
@@ -264,6 +312,44 @@ export default function QuizInterface({ pdfId }: QuizInterfaceProps) {
           </div>
         </>
       )}
+
+      {/* Error Dialog */}
+      <AlertDialog open={errorDialog.open} onOpenChange={(open) => setErrorDialog({ ...errorDialog, open })}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{errorDialog.title}</AlertDialogTitle>
+            <AlertDialogDescription>{errorDialog.message}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setErrorDialog({ ...errorDialog, open: false })}>
+              OK
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Confirm Dialog */}
+      <AlertDialog open={confirmDialog.open} onOpenChange={(open) => setConfirmDialog({ ...confirmDialog, open })}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Submission</AlertDialogTitle>
+            <AlertDialogDescription>{confirmDialog.message}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setConfirmDialog({ ...confirmDialog, open: false })}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setConfirmDialog({ ...confirmDialog, open: false });
+                confirmDialog.onConfirm();
+              }}
+            >
+              Submit Anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

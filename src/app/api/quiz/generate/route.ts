@@ -19,14 +19,35 @@ export async function POST(request: NextRequest) {
     }
 
     // Get PDF content
-    const pdf = await PDF.findById(pdfId);
-    if (!pdf) {
-      return NextResponse.json({ error: 'PDF not found' }, { status: 404 });
-    }
+    let content = '';
+    let actualPdfId = pdfId;
 
-    // Prepare content (limit to avoid token limits)
-    const contentLimit = 15000;
-    const content = pdf.extractedText.substring(0, contentLimit);
+    if (pdfId === 'all') {
+      // Get all PDFs
+      const pdfs = await PDF.find({});
+      if (pdfs.length === 0) {
+        return NextResponse.json({ error: 'No PDFs found' }, { status: 404 });
+      }
+
+      // Combine content from all PDFs (limited)
+      const contentLimit = 15000;
+      const contentPerPdf = Math.floor(contentLimit / pdfs.length);
+      content = pdfs
+        .map(pdf => pdf.extractedText.substring(0, contentPerPdf))
+        .join('\n\n---\n\n');
+
+      // Use first PDF's ID for storage (or could create a special "all" quiz)
+      actualPdfId = pdfs[0]._id;
+    } else {
+      const pdf = await PDF.findById(pdfId);
+      if (!pdf) {
+        return NextResponse.json({ error: 'PDF not found' }, { status: 404 });
+      }
+
+      // Prepare content (limit to avoid token limits)
+      const contentLimit = 15000;
+      content = pdf.extractedText.substring(0, contentLimit);
+    }
 
     // Generate questions using OpenAI
     const types = questionTypes || ['mcq', 'saq', 'laq'];
@@ -86,7 +107,7 @@ Make questions educational, clear, and varied in difficulty. Cover different top
 
     // Save quiz
     const quiz = await Quiz.create({
-      pdfId,
+      pdfId: actualPdfId,
       questions,
     });
 

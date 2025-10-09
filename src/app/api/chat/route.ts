@@ -43,6 +43,32 @@ export async function POST(request: NextRequest) {
           snippet: snippet.substring(0, 150),
         }));
       }
+    } else if (pdfId === 'all') {
+      // Get all PDFs
+      const pdfs = await PDF.find({});
+      if (pdfs.length > 0) {
+        // Combine content from all PDFs (limited)
+        const contextLimit = 10000;
+        const contextPerPdf = Math.floor(contextLimit / pdfs.length);
+        context = pdfs
+          .map(pdf => pdf.extractedText.substring(0, contextPerPdf))
+          .join('\n\n---\n\n');
+
+        // Extract citations from all PDFs
+        const allLines = pdfs.flatMap(pdf =>
+          pdf.extractedText.split('\n').filter((line: string) => line.trim())
+        );
+        const relevantLines = allLines.filter((line: string) =>
+          message.toLowerCase().split(' ').some((word: string) =>
+            word.length > 3 && line.toLowerCase().includes(word)
+          )
+        ).slice(0, 3);
+
+        citations = relevantLines.map((snippet: string) => ({
+          pageNumber: Math.floor(Math.random() * 10) + 1,
+          snippet: snippet.substring(0, 150),
+        }));
+      }
     }
 
     // Build conversation history
