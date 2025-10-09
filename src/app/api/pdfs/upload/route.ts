@@ -28,13 +28,14 @@ export async function POST(request: NextRequest) {
     const extractedText = `Sample content from ${file.name}. This would contain the actual PDF text in production.`;
     const pageCount = 1;
 
-    // Upload to Cloudinary
+    // Upload to Cloudinary with proper configuration for PDFs
     const uploadResult = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream(
         {
-          resource_type: 'raw',
+          resource_type: 'auto',
           folder: 'pdfs',
-          format: 'pdf',
+          public_id: `pdf_${Date.now()}`,
+          access_mode: 'public',
         },
         (error, result) => {
           if (error) reject(error);
